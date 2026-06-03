@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Mon Biorythme</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=IM+Fell+English:ital@0;1&display=swap');
+
+:root {
+  --gold: #d4af37;
+  --gold2: #b8952a;
+  --ink: #070510;
+  --ink2: #0f0c1a;
+  --ink3: #1a1530;
+  --border: #3a3020;
+  --muted: #a08050;
+  --muted2: #c8a870;
+  --phys: #e05c5c;
+  --emot: #5ca0e0;
+  --intel: #5ce0a0;
+  --fs: 1;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  background: var(--ink);
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  color: var(--gold);
+}
+
+#app {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--ink);
+  overflow: hidden;
+}
+
+/* HEADER */
+.header {
+  padding-top: calc(14px + env(safe-area-inset-top));
+  padding-bottom: 10px;
+  padding-left: 20px;
+  padding-right: 20px;
+  background: var(--ink);
+  flex-shrink: 0;
+  text-align: center;
+  border-bottom: 0.5px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.header h1 {
+  font-family: 'IM Fell English', Georgia, serif;
+  font-size: calc(22px * var(--fs));
+  font-weight: 400;
+  color: var(--gold);
+  letter-spacing: 1px;
+  flex: 1;
+  text-align: center;
+}
+
+.lang-btn {
+  font-size: calc(20px * var(--fs));
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+}
+
+/* TABS */
+.tabs {
+  display: flex;
+  border-bottom: 0.5px solid var(--border);
+  flex-shrink: 0;
+  background: var(--ink);
+}
+
+.tab {
+  flex: 1;
+  padding: 10px 4px;
+  text-align: center;
+  font-size: calc(12px * var(--fs));
+  color: var(--muted);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  letter-spacing: 0.5px;
+  font-family: 'Cormorant Garamond', serif;
+  transition: color 0.2s;
+}
+
+.tab.active {
+  color: var(--gold);
+  border-bottom: 2px solid var(--gold);
+}
+
+/* MAIN */
+.main {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 16px;
+  padding-bottom: calc(16px + env(safe-area-inset-bottom));
+}
+
+/* SCORE CARDS */
+.score-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.score-card {
+  background: var(--ink2);
+  border: 0.5px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 8px;
+  text-align: center;
+}
+
+.score-card .slabel {
+  font-size: calc(11px * var(--fs));
+  color: var(--muted2);
+  margin-bottom: 6px;
+  letter-spacing: 0.8px;
+  font-family: 'Cormorant Garamond', serif;
+}
+
+.score-card .svalue {
+  font-size: calc(22px * var(--fs));
+  font-weight: 600;
+  margin-bottom: 6px;
+  font-family: 'Cormorant Garamond', serif;
+}
+
+.score-card .gauge {
+  height: 3px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.score-card .gauge-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.6s ease;
+}
+
+.phys-c .svalue { color: var(--phys); }
+.phys-c .gauge-fill { background: var(--phys); }
+.emot-c .svalue { color: var(--emot); }
+.emot-c .gauge-fill { background: var(--emot); }
+.intel-c .svalue { color: var(--intel); }
+.intel-c .gauge-fill { background: var(--intel); }
+
+/* GLOBAL SCORE */
+.global-score {
+  background: var(--ink2);
+  border: 0.5px solid var(--gold);
+  border-radius: 12px;
+  padding: 14px;
+  text-align: center;
+  margin-bottom: 14px;
+}
+
+.global-score .glabel {
+  font-size: calc(12px * var(--fs));
+  color: var(--muted2);
+  margin-bottom: 4px;
+  letter-spacing: 1px;
+}
+
+.global-score .gvalue {
+  font-size: calc(40px * var(--fs));
+  font-weight: 600;
+  color: var(--gold);
+  line-height: 1.1;
+}
+
+.global-score .gdesc {
+  font-size: calc(13px * var(--fs));
+  color: var(--muted2);
+  margin-top: 4px;
+  font-style: italic;
+}
+
+/* CONSEIL */
+.conseil-box {
+  background: var(--ink2);
+  border: 0.5px solid var(--border);
+  border-radius: 10px;
+  padding: 14px;
+  margin-bottom: 14px;
+}
+
+.conseil-box .ctitle {
+  font-size: calc(11px * var(--fs));
+  color: var(--gold);
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+
+.conseil-box .ctext {
+  font-size: calc(14px * var(--fs));
+  color: var(--muted2);
+  line-height: 1.7;
+  font-style: italic;
+}
+
+/* CRITIQUES */
+.critiques-box {
+  background: var(--ink2);
+  border: 0.5px solid var(--border);
+  border-radius: 10px;
+  padding: 14px;
+}
+
+.critiques-box .ctitle {
+  font-size: calc(11px * var(--fs));
+  color: var(--gold);
+  letter-spacing: 1px;
+  margin-bottom: 10px;
+}
+
+.crit-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 0.5px solid var(--border);
+  font-size: calc(13px * var(--fs));
+}
+
+.crit-item:last-child { border-bottom: none; }
+.crit-date { color: var(--muted2); }
+.crit-type { color: var(--phys); font-size: calc(12px * var(--fs)); }
+
+/* CANVAS */
+#bio-canvas {
+  width: 100%;
+  display: block;
+  border-radius: 10px;
+  background: var(--ink2);
+}
+
+.legend {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: calc(13px * var(--fs));
+  color: var(--muted2);
+}
+
+.legend-dot {
+  width: 10px;
+  height: 3px;
+  border-radius: 2px;
+}
+
+/* CALENDRIER */
+.cal-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.cal-nav button {
+  background: var(--ink2);
+  border: 0.5px solid var(--border);
+  color: var(--gold);
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cal-nav .cal-month {
+  font-family: 'IM Fell English', serif;
+  font-size: calc(17px * var(--fs));
+  color: var(--gold);
+}
+
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  text-align: center;
+}
+
+.cal-dow {
+  font-size: calc(12px * var(--fs));
+  color: var(--muted2);
+  padding: 4px 2px;
+}
+
+.cal-day {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  font-size: calc(13px * var(--fs));
+  border: 0.5px solid var(--border);
+  cursor: pointer;
+  color: var(--muted2);
+  background: var(--ink2);
+  font-family: 'Cormorant Garamond', serif;
+}
+
+.cal-day.today {
+  background: var(--gold);
+  color: var(--ink);
+  font-weight: 600;
+  border-color: var(--gold);
+}
+
+.cal-day.favorable { background: #0f2a1a; color: #5ce0a0; border-color: #1a3a2a; }
+.cal-day.critique { background: #3a1515; color: #e05c5c; border-color: #4a2020; }
+.cal-day.tres-favorable { background: #0f3a1f; color: #5ce0a0; border-color: #1a5a30; }
+
+.cal-legend {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+  font-size: calc(12px * var(--fs));
+  color: var(--muted2);
+}
+
+.cal-legend-item { display: flex; align-items: center; gap: 5px; }
+.cal-legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+/* SETTINGS */
+.settings-section {
+  background: var(--ink2);
+  border: 0.5px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 14px;
+}
+
+.settings-section .stitle {
+  font-size: calc(11px * var(--fs));
+  color: var(--gold);
+  letter-spacing: 1px;
+  margin-bottom: 12px;
+}
+
+.settings-section label {
+  font-size: calc(13px * var(--fs));
+  color: var(--muted2);
+  display: block;
+  margin-bottom: 6px;
+}
+
+.settings-section input[type=date] {
+  width: 100%;
+  background: var(--ink);
+  border: 0.5px solid var(--border);
+  color: var(--gold);
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: calc(15px * var(--fs));
+  font-family: 'Cormorant Garamond', serif;
+  -webkit-appearance: none;
+  margin-bottom: 12px;
+}
+
+.btn-gold {
+  width: 100%;
+  background: var(--gold);
+  color: var(--ink);
+  border: none;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: calc(14px * var(--fs));
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'Cormorant Garamond', serif;
+  letter-spacing: 0.5px;
+}
+
+.lang-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.lang-opt {
+  flex: 1;
+  background: var(--ink);
+  border: 0.5px solid var(--border);
+  color: var(--muted);
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 20px;
+  cursor: pointer;
+  text-align: center;
+}
+
+.lang-opt.active {
+  border-color: var(--gold);
+  background: var(--ink2);
+}
+
+/* APPS GRID */
+.apps-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.app-icon-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+}
+
+.app-icon-img {
+  width: 56px;
+  height: 56px;
+  border-radius: 13px;
+  background: var(--ink3);
+  border: 0.5px solid var(--border);
+}
+
+.app-icon-name {
+  font-size: 9px;
+  color: var(--muted2);
+  text-align: center;
+  line-height: 1.3;
+}
+
+.badge-store {
+  display: block;
+  margin: 16px auto 0;
+  height: 36px;
+}
+
+/* SETUP SCREEN */
+.setup-screen {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: var(--ink);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 24px;
+  padding-top: calc(32px + env(safe-area-inset-top));
+  padding-bottom: calc(32px + env(safe-area-inset-bottom));
+}
+
+.setup-screen h2 {
+  font-family: 'IM Fell English', serif;
+  font-size: 28px;
+  color: var(--gold);
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.setup-screen p {
+  font-size: 14px;
+  color: var(--muted2);
+  text-align: center;
+  margin-bottom: 32px;
+  font-style: italic;
+  line-height: 1.6;
+}
+
+.setup-screen input[type=date] {
+  width: 100%;
+  background: var(--ink2);
+  border: 0.5px solid var(--gold);
+  color: var(--gold);
+  padding: 14px 16px;
+  border-radius: 10px;
+  font-size: 18px;
+  font-family: 'Cormorant Garamond', serif;
+  margin-bottom: 16px;
+  -webkit-appearance: none;
+  text-align: center;
+}
+
+.ornament {
+  font-size: 48px;
+  margin-bottom: 20px;
+  opacity: 0.6;
+}
+</style>
+</head>
+<body>
+
+<div id="setup-screen" class="setup-screen" style="display:none">
+  <div class="ornament">☽ ◯ ☾</div>
+  <h2 id="setup-title">Mon Biorythme</h2>
+  <p id="setup-desc">Entrez votre date de naissance pour découvrir vos cycles physique, émotionnel et intellectuel.</p>
+  <input type="date" id="setup-dob" value="1990-01-01">
+  <button class="btn-gold" id="setup-btn" onclick="saveSetup()">Commencer</button>
+</div>
+
+<div id="app">
+  <div class="header">
+    <div style="width:32px"></div>
+    <h1 id="appTitle">Mon Biorythme</h1>
+    <button class="lang-btn" onclick="toggleLang()" id="langBtn">🇫🇷</button>
+  </div>
+  <div class="tabs">
+    <div class="tab active" id="tab-today" onclick="showTab('today')" id="t1">
+      <span id="tab1-lbl">Aujourd'hui</span>
+    </div>
+    <div class="tab" id="tab-curves" onclick="showTab('curves')">
+      <span id="tab2-lbl">Courbes</span>
+    </div>
+    <div class="tab" id="tab-cal" onclick="showTab('cal')">
+      <span id="tab3-lbl">Calendrier</span>
+    </div>
+    <div class="tab" id="tab-settings" onclick="showTab('settings')">📱</div>
+  </div>
+  <div class="main" id="main-content"></div>
+</div>
+
+<script>
+const Capacitor = window.Capacitor;
+
+/* ── TRANSLATIONS ── */
+const T = {
+  fr: {
+    appTitle: 'Mon Biorythme',
+    tab1: "Aujourd'hui", tab2: 'Courbes', tab3: 'Calendrier',
+    phys: 'PHYSIQUE', emot: 'ÉMOTIONNEL', intel: 'INTELLECTUEL',
+    globalLabel: 'SCORE GLOBAL',
+    conseilTitle: 'CONSEIL DU JOUR',
+    critTitle: 'JOURS CRITIQUES À VENIR',
+    setupTitle: 'Mon Biorythme',
+    setupDesc: 'Entrez votre date de naissance pour découvrir vos cycles physique, émotionnel et intellectuel.',
+    setupBtn: 'Commencer',
+    dobLabel: 'DATE DE NAISSANCE',
+    saveBtn: 'Enregistrer',
+    langLabel: 'LANGUE',
+    appsTitle: 'NOS APPLICATIONS',
+    favorable: 'Favorable', critique: 'Critique', neutre: 'Neutre',
+    desc: {
+      high: 'Excellente journée !',
+      good: 'Bonne journée',
+      neutral: 'Journée mitigée',
+      low: 'Journée difficile',
+      critical: 'Jour critique — prudence'
+    },
+    conseils: {
+      physHigh:   'Votre énergie physique est à son pic. Idéal pour le sport, les activités manuelles et tout effort physique.',
+      physLow:    'Votre énergie physique est basse. Privilégiez le repos et évitez les efforts intenses.',
+      emotHigh:   'Votre sensibilité émotionnelle est élevée. Excellente journée pour les échanges importants et la créativité.',
+      emotLow:    "Votre émotivité est en retrait. Gardez recul et objectivité dans vos relations.",
+      intelHigh:  'Votre intellect est à son meilleur. Parfait pour les décisions importantes et le travail intellectuel.',
+      intelLow:   'Votre concentration est réduite. Préférez les tâches routinières aux décisions majeures.',
+      critical:   'Un ou plusieurs cycles sont en transition. Évitez les décisions irréversibles et soyez vigilant.',
+      balanced:   'Vos trois cycles sont en équilibre. Une journée stable et harmonieuse se profile.'
+    },
+    dows: ['L','M','M','J','V','S','D'],
+    months: ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre']
+  },
+  en: {
+    appTitle: 'My Biorhythm',
+    tab1: 'Today', tab2: 'Curves', tab3: 'Calendar',
+    phys: 'PHYSICAL', emot: 'EMOTIONAL', intel: 'INTELLECTUAL',
+    globalLabel: 'GLOBAL SCORE',
+    conseilTitle: "TODAY'S ADVICE",
+    critTitle: 'UPCOMING CRITICAL DAYS',
+    setupTitle: 'My Biorhythm',
+    setupDesc: 'Enter your date of birth to discover your physical, emotional and intellectual cycles.',
+    setupBtn: 'Start',
+    dobLabel: 'DATE OF BIRTH',
+    saveBtn: 'Save',
+    langLabel: 'LANGUAGE',
+    appsTitle: 'OUR APPS',
+    favorable: 'Favorable', critique: 'Critical', neutre: 'Neutral',
+    desc: {
+      high: 'Excellent day!',
+      good: 'Good day',
+      neutral: 'Mixed day',
+      low: 'Difficult day',
+      critical: 'Critical day — be careful'
+    },
+    conseils: {
+      physHigh:   'Your physical energy is at its peak. Great day for sports, manual work and physical effort.',
+      physLow:    'Your physical energy is low. Prioritize rest and avoid intense efforts.',
+      emotHigh:   'Your emotional sensitivity is high. Excellent day for important conversations and creativity.',
+      emotLow:    'Your emotional state is withdrawn. Keep perspective and objectivity in relationships.',
+      intelHigh:  'Your intellect is at its best. Perfect for important decisions and intellectual work.',
+      intelLow:   'Your concentration is reduced. Prefer routine tasks over major decisions.',
+      critical:   'One or more cycles are in transition. Avoid irreversible decisions and stay alert.',
+      balanced:   'Your three cycles are balanced. A stable and harmonious day lies ahead.'
+    },
+    dows: ['M','T','W','T','F','S','S'],
+    months: ['January','February','March','April','May','June','July','August','September','October','November','December']
+  }
+};
+
+/* ── STATE ── */
+let lang = localStorage.getItem('bio_lang') || 'fr';
+let birthdate = null;
+let calYear, calMonth;
+const now = new Date();
+calYear = now.getFullYear();
+calMonth = now.getMonth();
+
+const APPS = [
+  {id:'6770566450',name:'Amerique Nord GQ'},{id:'6770458593',name:'Europe GQ'},{id:'6770453028',name:'France GQ'},
+  {id:'6770848617',name:'Moyen Orient GQ'},{id:'6770302783',name:'Architectes'},{id:'6770857576',name:'Asie GQ'},
+  {id:'6770826067',name:'Europe HUE GQ'},{id:'6770836826',name:'Afrique GQ'},{id:'6770580053',name:'Amerique Sud GQ'},
+  {id:'6764087562',name:'Aéroports'},{id:'6763857843',name:'Gratte-Ciels'},{id:'6763569148',name:'Nobels'},
+  {id:'6767273597',name:'Machines Lég.'},{id:'6768320574',name:'Légion Honneur'},{id:'6769310796',name:'App Solitaire'},
+  {id:'6768068634',name:'Peintres'},{id:'6767810270',name:'Îles du Monde'},{id:'6768003416',name:'Explorateurs'},
+  {id:'6767492967',name:'Institutions'},{id:'6767135193',name:'Auteurs BD'},{id:'6766261703',name:'Micro-Info'},
+  {id:'6766260978',name:'Histoire Info'},{id:'6761993002',name:'Comédie Fr.'},{id:'6761769529',name:'Institut Fr.'},
+  {id:'6761335268',name:'Panthéon'},{id:'6761374601',name:'Maréchaux Nap.'},{id:'6761361079',name:'Assemblée Paris'},
+  {id:'6761363063',name:'Sénat Paris'},{id:'6761324444',name:'Présidents Fr.'},{id:'6761322546',name:'Rois de France'},
+  {id:'6761334922',name:'Académie Fr.'},{id:'6761709149',name:'Basilique St-Denis'},{id:'6761685637',name:'Arbres France'},
+  {id:'6761656628',name:'Compositeurs'},{id:'6760929391',name:'Théâtres Paris'},{id:'6761293938',name:'Scènes Paris'},
+  {id:'6760890465',name:'Musées Paris'},{id:'6760751055',name:'Cimetières Paris'},{id:'6761421276',name:'Capitales Europe'},
+  {id:'6762098486',name:'Familles Royales'},{id:'6762263227',name:'Leaders Euro.'},{id:'6762346365',name:'Pays UE'},
+  {id:'6762256169',name:'Présidents US'},{id:'6762370541',name:'États-Unis'},{id:'6762208827',name:'Dynasties Royales'},
+  {id:'6762522136',name:'Dynasties Chin.'},{id:'6762452564',name:'Dynasties Russes'},{id:'6762542395',name:'Conquêtes Soc.'},
+  {id:'6762091681',name:'Bataille Navale'},{id:'6762076518',name:'Dames Checkers'},{id:'6762558969',name:'ColorCodeMind'},
+  {id:'6762552826',name:'Lexigo'},{id:'6768574161',name:'Tuiles Numériques'},{id:'6769653710',name:'Légendes Pop'},
+  {id:'6763507194',name:'Hôtels RoofTop'},{id:'6762618424',name:'Ponts du Monde'},{id:'6763076110',name:'Paquebots'},
+  {id:'6763069304',name:'Avions Légende'},{id:'6763071567',name:'Voitures Lég.'},{id:'6762077646',name:'Flip Board'},
+  {id:'6762632868',name:'Trains Mythiques'},{id:'6762823383',name:'Châteaux Loire'},{id:'6762598304',name:'Mers & Océans'},
+  {id:'6762594201',name:'Détroits'},{id:'6762006105',name:'Iconic Covers'},{id:'6759219383',name:'FreshFood'},
+  {id:'6760617965',name:'MesRestaurants'},{id:'6760126279',name:'Cave Manager'},{id:'6761271324',name:'MediSafe'},
+  {id:'1483084001',name:'Belote Calc'},{id:'1481989301',name:'Tarots Calc'},{id:'1475884625',name:'Toi ou Moi'}
+];
+
+/* ── BIORHYTHM MATH ── */
+function daysSince(birth) {
+  const today = new Date();
+  today.setHours(0,0,0,0);
+  return Math.floor((today - birth) / 86400000);
+}
+
+function bioScore(days, period) {
+  return Math.round(Math.sin(2 * Math.PI * days / period) * 100);
+}
+
+function isCritical(days) {
+  const p = Math.abs(Math.sin(2 * Math.PI * days / 23));
+  const e = Math.abs(Math.sin(2 * Math.PI * days / 28));
+  const i = Math.abs(Math.sin(2 * Math.PI * days / 33));
+  return p < 0.13 || e < 0.13 || i < 0.13;
+}
+
+function critTypes(days, t) {
+  const types = [];
+  if (Math.abs(Math.sin(2 * Math.PI * days / 23)) < 0.13) types.push(t.phys);
+  if (Math.abs(Math.sin(2 * Math.PI * days / 28)) < 0.13) types.push(t.emot);
+  if (Math.abs(Math.sin(2 * Math.PI * days / 33)) < 0.13) types.push(t.intel);
+  return types;
+}
+
+function getConseil(p, e, i, t) {
+  if (isCritical(daysSince(birthdate))) return t.conseils.critical;
+  const scores = [Math.abs(p), Math.abs(e), Math.abs(i)];
+  const maxIdx = scores.indexOf(Math.max(...scores));
+  if (maxIdx === 0) return p > 0 ? t.conseils.physHigh : t.conseils.physLow;
+  if (maxIdx === 1) return e > 0 ? t.conseils.emotHigh : t.conseils.emotLow;
+  return i > 0 ? t.conseils.intelHigh : t.conseils.intelLow;
+}
+
+function getDesc(global, critical, t) {
+  if (critical) return t.desc.critical;
+  if (global > 50) return t.desc.high;
+  if (global > 15) return t.desc.good;
+  if (global > -15) return t.desc.neutral;
+  return t.desc.low;
+}
+
+/* ── UI HELPERS ── */
+function sign(v) { return v > 0 ? '+' : ''; }
+
+function updateLangUI() {
+  const t = T[lang];
+  document.getElementById('appTitle').textContent = t.appTitle;
+  document.getElementById('tab1-lbl').textContent = t.tab1;
+  document.getElementById('tab2-lbl').textContent = t.tab2;
+  document.getElementById('tab3-lbl').textContent = t.tab3;
+  document.getElementById('langBtn').textContent = lang === 'fr' ? '🇫🇷' : '🇬🇧';
+  if (document.getElementById('setup-screen').style.display !== 'none') {
+    document.getElementById('setup-title').textContent = t.setupTitle;
+    document.getElementById('setup-desc').textContent = t.setupDesc;
+    document.getElementById('setup-btn').textContent = t.setupBtn;
+  }
+}
+
+function toggleLang() {
+  lang = lang === 'fr' ? 'en' : 'fr';
+  localStorage.setItem('bio_lang', lang);
+  updateLangUI();
+  showTab(currentTab);
+}
+
+let currentTab = 'today';
+
+function showTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  const t = T[lang];
+  const mc = document.getElementById('main-content');
+
+  if (tab === 'today') renderToday(mc, t);
+  else if (tab === 'curves') renderCurves(mc, t);
+  else if (tab === 'cal') renderCalendar(mc, t);
+  else renderSettings(mc, t);
+}
+
+/* ── TAB: TODAY ── */
+function renderToday(mc, t) {
+  const days = daysSince(birthdate);
+  const p = bioScore(days, 23);
+  const e = bioScore(days, 28);
+  const i = bioScore(days, 33);
+  const global = Math.round((p + e + i) / 3);
+  const crit = isCritical(days);
+  const desc = getDesc(global, crit, t);
+  const conseil = getConseil(p, e, i, t);
+
+  // next critical days
+  let nextCrits = [];
+  for (let d = 1; d <= 30 && nextCrits.length < 5; d++) {
+    if (isCritical(days + d)) {
+      const date = new Date();
+      date.setDate(date.getDate() + d);
+      const types = critTypes(days + d, t);
+      nextCrits.push({ date, types });
+    }
+  }
+
+  const critHTML = nextCrits.map(c => {
+    const dateStr = c.date.toLocaleDateString(lang === 'fr' ? 'fr-FR' : 'en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
+    return `<div class="crit-item"><span class="crit-date">${dateStr}</span><span class="crit-type">${c.types.join(' · ')}</span></div>`;
+  }).join('');
+
+  mc.innerHTML = `
+    <div class="score-grid">
+      <div class="score-card phys-c">
+        <div class="slabel">${t.phys}</div>
+        <div class="svalue">${sign(p)}${p}%</div>
+        <div class="gauge"><div class="gauge-fill" style="width:${Math.abs(p)}%"></div></div>
+      </div>
+      <div class="score-card emot-c">
+        <div class="slabel">${t.emot}</div>
+        <div class="svalue">${sign(e)}${e}%</div>
+        <div class="gauge"><div class="gauge-fill" style="width:${Math.abs(e)}%"></div></div>
+      </div>
+      <div class="score-card intel-c">
+        <div class="slabel">${t.intel}</div>
+        <div class="svalue">${sign(i)}${i}%</div>
+        <div class="gauge"><div class="gauge-fill" style="width:${Math.abs(i)}%"></div></div>
+      </div>
+    </div>
+    <div class="global-score">
+      <div class="glabel">${t.globalLabel}</div>
+      <div class="gvalue">${sign(global)}${global}%</div>
+      <div class="gdesc">${desc}</div>
+    </div>
+    <div class="conseil-box">
+      <div class="ctitle">${t.conseilTitle}</div>
+      <div class="ctext">${conseil}</div>
+    </div>
+    <div class="critiques-box">
+      <div class="ctitle">${t.critTitle}</div>
+      ${critHTML}
+    </div>
+  `;
+}
+
+/* ── TAB: COURBES ── */
+function renderCurves(mc, t) {
+  mc.innerHTML = `
+    <canvas id="bio-canvas"></canvas>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#e05c5c"></div>${t.phys} (23j)</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#5ca0e0"></div>${t.emot} (28j)</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#5ce0a0"></div>${t.intel} (33j)</div>
+    </div>
+  `;
+  setTimeout(() => drawCurves(t), 60);
+}
+
+function drawCurves(t) {
+  const canvas = document.getElementById('bio-canvas');
+  if (!canvas) return;
+  const dpr = window.devicePixelRatio || 2;
+  const W = canvas.offsetWidth;
+  const H = Math.round(W * 0.55);
+  canvas.width = W * dpr;
+  canvas.height = H * dpr;
+  canvas.style.height = H + 'px';
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+
+  ctx.fillStyle = '#0f0c1a';
+  ctx.fillRect(0, 0, W, H);
+
+  const midY = H / 2;
+  const range = 60;
+  const days = daysSince(birthdate);
+  const startDay = days - 30;
+
+  // grid lines
+  ctx.strokeStyle = '#1e1a2a';
+  ctx.lineWidth = 0.5;
+  [25, 50, 75].forEach(pct => {
+    const y1 = midY - (pct / 100) * (H * 0.44);
+    const y2 = midY + (pct / 100) * (H * 0.44);
+    ctx.beginPath(); ctx.moveTo(0, y1); ctx.lineTo(W, y1); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(0, y2); ctx.lineTo(W, y2); ctx.stroke();
+  });
+
+  // zero line
+  ctx.strokeStyle = '#3a3050';
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(0, midY); ctx.lineTo(W, midY); ctx.stroke();
+
+  // today line
+  const todayX = (30 / range) * W;
+  ctx.strokeStyle = '#d4af3760';
+  ctx.setLineDash([4, 4]);
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(todayX, 0); ctx.lineTo(todayX, H); ctx.stroke();
+  ctx.setLineDash([]);
+
+  // label "Aujourd'hui"
+  ctx.fillStyle = '#d4af3780';
+  ctx.font = `${10}px 'Cormorant Garamond', serif`;
+  ctx.fillText(lang === 'fr' ? "Auj." : "Today", todayX + 4, 14);
+
+  // curves
+  const curves = [
+    { period: 23, color: '#e05c5c' },
+    { period: 28, color: '#5ca0e0' },
+    { period: 33, color: '#5ce0a0' }
+  ];
+
+  curves.forEach(({ period, color }) => {
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2;
+    ctx.shadowBlur = 0;
+    ctx.beginPath();
+    for (let idx = 0; idx <= range * 2; idx++) {
+      const d = startDay + idx / 2;
+      const score = Math.sin(2 * Math.PI * d / period);
+      const x = (idx / (range * 2)) * W;
+      const y = midY - score * (H * 0.44);
+      idx === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+  });
+
+  // dots for today
+  const todayDays = days;
+  curves.forEach(({ period, color }) => {
+    const score = Math.sin(2 * Math.PI * todayDays / period);
+    const y = midY - score * (H * 0.44);
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.arc(todayX, y, 4, 0, Math.PI * 2);
+    ctx.fill();
+  });
+}
+
+/* ── TAB: CALENDRIER ── */
+function renderCalendar(mc, t) {
+  const days = daysSince(birthdate);
+  const firstDay = new Date(calYear, calMonth, 1);
+  const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+  let startDow = firstDay.getDay(); // 0=Sun
+  startDow = startDow === 0 ? 6 : startDow - 1; // Mon=0
+
+  const monthName = t.months[calMonth] + ' ' + calYear;
+  const todayDate = new Date();
+
+  let dowHTML = t.dows.map(d => `<div class="cal-dow">${d}</div>`).join('');
+  let daysHTML = '';
+  for (let i = 0; i < startDow; i++) daysHTML += '<div></div>';
+
+  for (let d = 1; d <= daysInMonth; d++) {
+    const date = new Date(calYear, calMonth, d);
+    const dSince = Math.floor((date - birthdate) / 86400000);
+    const p = bioScore(dSince, 23);
+    const e = bioScore(dSince, 28);
+    const i = bioScore(dSince, 33);
+    const avg = (p + e + i) / 3;
+    const crit = isCritical(dSince);
+    const isToday = date.toDateString() === todayDate.toDateString();
+
+    let cls = 'cal-day';
+    if (isToday) cls += ' today';
+    else if (crit) cls += ' critique';
+    else if (avg > 50) cls += ' tres-favorable';
+    else if (avg > 15) cls += ' favorable';
+
+    daysHTML += `<div class="${cls}" onclick="showDayDetail(${dSince})">${d}</div>`;
+  }
+
+  mc.innerHTML = `
+    <div class="cal-nav">
+      <button onclick="calPrev()">‹</button>
+      <div class="cal-month">${monthName}</div>
+      <button onclick="calNext()">›</button>
+    </div>
+    <div class="cal-grid">
+      ${dowHTML}
+      ${daysHTML}
+    </div>
+    <div class="cal-legend">
+      <div class="cal-legend-item"><div class="cal-legend-dot" style="background:#5ce0a0"></div>${t.favorable}</div>
+      <div class="cal-legend-item"><div class="cal-legend-dot" style="background:#e05c5c"></div>${t.critique}</div>
+      <div class="cal-legend-item"><div class="cal-legend-dot" style="background:#6a5030"></div>${t.neutre}</div>
+    </div>
+  `;
+}
+
+function calPrev() {
+  calMonth--;
+  if (calMonth < 0) { calMonth = 11; calYear--; }
+  showTab('cal');
+}
+
+function calNext() {
+  calMonth++;
+  if (calMonth > 11) { calMonth = 0; calYear++; }
+  showTab('cal');
+}
+
+function showDayDetail(dSince) {
+  const p = bioScore(dSince, 23);
+  const e = bioScore(dSince, 28);
+  const i = bioScore(dSince, 33);
+  const t = T[lang];
+  const global = Math.round((p + e + i) / 3);
+  const crit = isCritical(dSince);
+  const msg = `${t.phys}: ${sign(p)}${p}%\n${t.emot}: ${sign(e)}${e}%\n${t.intel}: ${sign(i)}${i}%\n\n${t.globalLabel}: ${sign(global)}${global}%\n${crit ? '⚠ ' + t.desc.critical : getDesc(global, false, t)}`;
+  alert(msg);
+}
+
+/* ── TAB: SETTINGS ── */
+let gridRendered = false;
+
+function renderSettings(mc, t) {
+  const dob = localStorage.getItem('bio_dob') || '';
+  mc.innerHTML = `
+    <div class="settings-section">
+      <div class="stitle">${t.dobLabel}</div>
+      <input type="date" id="settings-dob" value="${dob}">
+      <div class="stitle" style="margin-top:8px">${t.langLabel}</div>
+      <div class="lang-row">
+        <button class="lang-opt ${lang==='fr'?'active':''}" onclick="setLang('fr')">🇫🇷</button>
+        <button class="lang-opt ${lang==='en'?'active':''}" onclick="setLang('en')">🇬🇧</button>
+      </div>
+      <button class="btn-gold" onclick="saveSettings()">${t.saveBtn}</button>
+    </div>
+    <div class="settings-section">
+      <div class="stitle">${t.appsTitle}</div>
+      <div class="apps-grid" id="apps-grid"></div>
+      <a href="https://apps.apple.com/developer/id368771203" onclick="openExt(this.href);return false;">
+        <img class="badge-store" src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/fr-fr" alt="App Store">
+      </a>
+    </div>
+  `;
+  renderAppsGrid();
+}
+
+function renderAppsGrid() {
+  const grid = document.getElementById('apps-grid');
+  if (!grid || grid.childElementCount > 0) return;
+  APPS.forEach(app => {
+    const item = document.createElement('div');
+    item.className = 'app-icon-item';
+    item.onclick = () => openExt('https://apps.apple.com/app/id' + app.id);
+    const img = document.createElement('img');
+    img.className = 'app-icon-img';
+    img.alt = app.name;
+    const cbName = 'itcb' + app.id;
+    window[cbName] = function(d) {
+      if (d.results && d.results[0]) img.src = d.results[0].artworkUrl60;
+    };
+    const s = document.createElement('script');
+    s.src = 'https://itunes.apple.com/lookup?id=' + app.id + '&callback=' + cbName;
+    document.body.appendChild(s);
+    const name = document.createElement('div');
+    name.className = 'app-icon-name';
+    name.textContent = app.name;
+    item.appendChild(img);
+    item.appendChild(name);
+    grid.appendChild(item);
+  });
+}
+
+function setLang(l) {
+  lang = l;
+  localStorage.setItem('bio_lang', lang);
+  updateLangUI();
+  document.querySelectorAll('.lang-opt').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+}
+
+function saveSettings() {
+  const dob = document.getElementById('settings-dob').value;
+  if (dob) {
+    localStorage.setItem('bio_dob', dob);
+    birthdate = new Date(dob + 'T00:00:00');
+    showTab('today');
+  }
+}
+
+function openExt(url) {
+  if (Capacitor) window.open(url, '_system');
+  else window.open(url, '_blank');
+}
+
+/* ── SETUP ── */
+function saveSetup() {
+  const dob = document.getElementById('setup-dob').value;
+  if (!dob) return;
+  localStorage.setItem('bio_dob', dob);
+  birthdate = new Date(dob + 'T00:00:00');
+  document.getElementById('setup-screen').style.display = 'none';
+  showTab('today');
+}
+
+/* ── INIT ── */
+function init() {
+  const savedDob = localStorage.getItem('bio_dob');
+  updateLangUI();
+  if (!savedDob) {
+    const t = T[lang];
+    document.getElementById('setup-title').textContent = t.setupTitle;
+    document.getElementById('setup-desc').textContent = t.setupDesc;
+    document.getElementById('setup-btn').textContent = t.setupBtn;
+    document.getElementById('setup-screen').style.display = 'flex';
+  } else {
+    birthdate = new Date(savedDob + 'T00:00:00');
+    showTab('today');
+  }
+}
+
+window.addEventListener('DOMContentLoaded', init);
+window.addEventListener('resize', () => {
+  if (currentTab === 'curves') drawCurves(T[lang]);
+});
+</script>
+</body>
+</html>
